@@ -1,0 +1,12 @@
+#!/usr/bin/python3
+import socket
+BUF_SIZE = 1024
+HOST = '127.0.0.1' # '' would cause the server to listen on all interfaces
+PORT = 65432
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP Socket
+sock.bind((HOST, PORT)) # Claim messages sent to port "PORT"
+while True:
+data, address = sock.recvfrom(BUF_SIZE) # Receive up to "BUF_SIZE" bytes
+text = data.decode('utf-8') # Convert from binary representation
+s	ource_ip, source_port = address # Extract source IP and source port
+	print('IP: {} Port: {} Message: {}'.format(source_ip, source_port, text))
