@@ -15,17 +15,28 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock: # TCP socket
 			data = sc.recv(BUF_SIZE) # recvfrom not needed since address is known
 			userInput = list(str(data))
 			action = userInput[2]
+			errorMessage = ''
 			if action == 'P':
 				posOne = int(userInput[3])
 				posTwo = int(userInput[4])
 				posThree = int(userInput[5])
-				inputValue = userInput[6]
-				if board[posOne][posTwo][posThree] == '-':
-					board[posOne][posTwo][posThree] = inputValue
+				if posOne > 3:
+					errorMessage = errorMessage + 'First position is out of range \n' + data + '\n'
+				if posTwo > 3:
+					errorMessage = errorMessage + 'Second position is out of range \n'
+				if posThree > 3:
+					errorMessage = errorMessage + 'Third position is out of range \n'
+				if errorMessage != '':
+					sc.sendall(errorMessage.encode())
 				else:
-					result = 'ERROR \n'
-					sc.sendall(result.encode())
-					break
+					inputValue = userInput[6]
+					if board[posOne][posTwo][posThree] == '-':
+						board[posOne][posTwo][posThree] = inputValue
+						result = 'OK \n'
+						sc.sendall(result.encode())
+					else:
+						result = 'ERROR \n'
+						sc.sendall(result.encode())
 			elif action == 'G':
 				result = ''
 				for row in board :
@@ -35,4 +46,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock: # TCP socket
 						for r in ro :
 							result = result + r
 				result = result + '\n'
+				sc.sendall(result.encode())
+			else:
+				result = 0
 				sc.sendall(result.encode())
