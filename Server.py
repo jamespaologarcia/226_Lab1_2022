@@ -4,6 +4,53 @@ HOST = ''
 PORT = 12345
 board =  [[['_' for _ in range(4)]  for _ in range(4)] for _ in range(4)]
 count = 0
+#Function to add entry to the board
+def insertToBoard(userInput): 
+	global count
+	try:
+		posOne = int(userInput[3])
+		posTwo = int(userInput[4])
+		posThree = int(userInput[5])
+		inputValue = userInput[6]
+		if posOne > 3:
+			result = 'E\n'
+		elif posTwo > 3:
+			result = 'E\n'
+		elif posThree > 3:
+			result = 'E\n'
+		else:
+			if board[posOne][posTwo][posThree] == '_':
+				if int(inputValue) - 1 == int(count) :
+					board[posOne][posTwo][posThree] = inputValue
+					result = 'O\n'
+					count = int(count) + 1
+					if int(count) == 3 :
+							count = 0
+				else :
+					result = 'E\n'
+			else:
+					result = 'E\n'
+	except:
+		result = 'E\n'
+	return result
+#Function to display the board
+def showBoard(result):
+	global board
+	for row in board :
+		if result != '':
+			result = result + '\n'
+		for ro in row :
+			result = result + '\n'
+			for r in ro :
+				result = result + r	
+	return result
+#Function to clear the board
+def clearBoard():
+	global board 
+	board = [[['_' for _ in range(4)]  for _ in range(4)] for _ in range(4)]
+	global count
+	count = 0
+	return 'O\n'
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock: # TCP socket
 	sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # Details later
 	sock.bind((HOST, PORT)) # Claim messages sent to port "PORT"
@@ -19,43 +66,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock: # TCP socket
 			errorMessage = ''
 			result = ''
 			if action == 'P':
-				try:
-					posOne = int(userInput[3])
-					posTwo = int(userInput[4])
-					posThree = int(userInput[5])
-					if posOne > 3:
-						result = 'E\n'
-					elif posTwo > 3:
-						result = 'E\n'
-					elif posThree > 3:
-						result = 'E\n'
-					else:
-						inputValue = userInput[6]
-						if board[posOne][posTwo][posThree] == '_':
-							if int(inputValue) - 1 == int(count) :
-								board[posOne][posTwo][posThree] = inputValue
-								result = 'O\n'
-								count = int(count) + 1
-								if int(count) == 3 :
-									count = 0
-							else :
-								result = 'E\n'
-						else:
-							result = 'E\n'
-				except :
-					result = 'E\n'	
+				result = insertToBoard(userInput)
 			elif action == 'C' :
-				board =  [[['_' for _ in range(4)]  for _ in range(4)] for _ in range(4)]
-				result = 'O\n'
-				count = 0
+				result = clearBoard()
 			elif action == 'G':
-				for row in board :
-					if result != '':
-						result = result + '\n'
-					for ro in row :
-						result = result + '\n'
-						for r in ro :
-							result = result + r
+				result = showBoard(result)
 				result = result.split('\n', 1)[1] + '\n\n\n'
 			else:
 				result = str('E\n')
